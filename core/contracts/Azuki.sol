@@ -28,6 +28,10 @@ contract Azuki is ERC721, ERC721Enumerable, ERC721URIStorage {
         _safeMint(msg.sender, tokenId);
     }
 
+    function getBalances(address adr) view external returns(uint256[] memory){
+        return balances[adr];
+    }
+
     function tokenURI(uint256 tokenId)
         public
         pure
