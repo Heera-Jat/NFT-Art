@@ -31,7 +31,7 @@ contract Azuki is ERC721, ERC721Enumerable, ERC721URIStorage {
     function getBalances(address adr) view external returns(uint256[] memory){
         return balances[adr];
     }
-
+    
     function tokenURI(uint256 tokenId)
         public
         pure
@@ -50,17 +50,18 @@ contract Azuki is ERC721, ERC721Enumerable, ERC721URIStorage {
         return super.supportsInterface(interfaceId);
     }
 
-    function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721, ERC721Enumerable) returns (address) {
-        super._update(to,tokenId,auth);
+    function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721, ERC721Enumerable) returns (address prevOwner) {
+        address prevOwner = super._update(to,tokenId,auth);
 
         if(to != address(0)) {
             balances[to].push(tokenId);
         }
 
-        if(auth != address (0)) {
-            for(uint i; i < balances[auth].length;) {
-                if(balances[auth][i] == tokenId) {
-                    delete balances[auth][i];
+        if(prevOwner != address (0)) {
+            for(uint i; i < balances[prevOwner].length;) {
+                if(balances[prevOwner][i] == tokenId) {
+                    balances[prevOwner][i] = balances[prevOwner][balances[prevOwner].length - 1];
+                    balances[prevOwner].pop();
                     break;
                 }
             
@@ -69,7 +70,7 @@ contract Azuki is ERC721, ERC721Enumerable, ERC721URIStorage {
                 }
             }
         }
-
+        return prevOwner;
     }
 
     function _increaseBalance(address account, uint128 value) internal virtual override(ERC721, ERC721Enumerable) {

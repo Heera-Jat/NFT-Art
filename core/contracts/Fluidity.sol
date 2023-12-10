@@ -81,7 +81,8 @@ contract Fluidity {
         }
 
         for(uint i; i < noOfNfts;) {
-            delete nftTokenIds[nftContract][i];
+            nftTokenIds[nftContract][i] = nftTokenIds[nftContract][noOfNfts - 1];
+            nftTokenIds[nftContract].pop();
 
             unchecked {
                 i++;
@@ -125,7 +126,7 @@ contract Fluidity {
         uint256 contractNFTBalance = IERC721(nftContract).balanceOf(address(this));
         uint256 contractTokenBalance = IERC20(fluidAddress).balanceOf(address(this));
 
-        uint amountNFTReceived = ((contractNFTBalance * amountFluidTokens) / (contractTokenBalance + amountFluidTokens)/1e18);
+        uint amountNFTReceived = ((contractNFTBalance * amountFluidTokens) / (contractTokenBalance + amountFluidTokens));
 
         return amountNFTReceived;
     }
@@ -134,7 +135,7 @@ contract Fluidity {
         uint256 contractNFTBalance = IERC721(nftContract).balanceOf(address(this));
         uint256 contractTokenBalance = IERC20(fluidAddress).balanceOf(address(this));
 
-        uint amountNFTReceived = ((contractNFTBalance * amountFluidTokens) / (contractTokenBalance + amountFluidTokens)/1e18);
+        uint amountNFTReceived = ((contractNFTBalance * amountFluidTokens) / (contractTokenBalance + amountFluidTokens));
 
         IERC20(fluidAddress).transferFrom(msg.sender, address(this), amountFluidTokens);
 
@@ -150,7 +151,8 @@ contract Fluidity {
                 }
 
                 for(uint i; i < amountNFTReceived;) {
-                    delete nftTokenIds[nftContract][i];
+                    nftTokenIds[nftContract][i] = nftTokenIds[nftContract][amountNFTReceived - 1];
+                    nftTokenIds[nftContract].pop();
                     unchecked {
                         i++;
                     }
